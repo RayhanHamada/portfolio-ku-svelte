@@ -2,6 +2,7 @@
   import { isDark } from '@/src/lib/store';
   import Intro from './lib/components/Intro.svelte';
   import Navbar from './lib/components/Navbar.svelte';
+  import Project from './lib/components/Project.svelte';
 </script>
 
 <Navbar />
@@ -11,6 +12,7 @@
   }`}
 >
   <Intro />
+  <Project />
 </div>
 
 <style>
