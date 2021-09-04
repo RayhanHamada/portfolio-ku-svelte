@@ -7,7 +7,7 @@
   import { writable } from 'svelte/store';
   import { isDark } from '../store';
 
-  const projects = writable<string[]>([]);
+  const projects = writable<{ name: string; html_url: string }[]>([]);
 
   onMount(() => {
     ky.get('https://api.github.com/users/rayhanhamada/repos', {
@@ -20,9 +20,15 @@
         afterResponse: [
           async (_req, _opt, res) => {
             projects.set(
-              ((await res.json()) as { name: string; topics: string[] }[])
+              (
+                (await res.json()) as {
+                  name: string;
+                  html_url: string;
+                  topics: string[];
+                }[]
+              )
                 .filter((p) => p.topics.includes('for-portfolio'))
-                .map((p) => p.name)
+                .map(({ name, html_url }) => ({ name, html_url }))
             );
           },
         ],
@@ -37,16 +43,16 @@
     <div
       class="grid grid-cols-1 w-full items-center gap-y-3 md:gap-x-4 md:grid-cols-2 md:grid-rows-3"
     >
-      {#each $projects as name}
+      {#each $projects as p}
         <a
           class="md:w-60 lg:w-full md:place-self-center border border-my-red"
           v-for="p in projects"
-          href={`https://github-readme-stats.vercel.app/api/pin/?username=rayhanhamada&repo=${name}&show_owner=true&theme=${
-            $isDark ? 'monokai' : ''
-          }&title_color=e41749`}
+          href={p.html_url}
         >
           <img
-            src={`https://github-readme-stats.vercel.app/api/pin/?username=rayhanhamada&repo=${name}&show_owner=true&theme=${
+            src={`https://github-readme-stats.vercel.app/api/pin/?username=rayhanhamada&repo=${
+              p.name
+            }&show_owner=true&theme=${
               $isDark ? 'monokai' : ''
             }&title_color=e41749`}
             alt=""
